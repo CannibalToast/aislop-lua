@@ -214,6 +214,7 @@ export const filterProjectFiles = (
 	files: string[],
 	extraExtensions: string[] = [],
 	exclude: string[] = [],
+	include: string[] = [],
 ): string[] => {
 	const extraSet = new Set(extraExtensions);
 	const normalizedFiles = files
@@ -235,19 +236,35 @@ export const filterProjectFiles = (
 		});
 	};
 
-	return normalizedFiles
-		.filter(({ absolutePath, relativePath }) => {
-			return (
-				hasAllowedExtension(relativePath, extraSet) &&
-				!isExcludedPath(relativePath) &&
-				!isTestFile(relativePath) &&
-				!isBuildCacheFile(relativePath) &&
-				!ignoredPaths.has(relativePath) &&
-				!isUserExcluded(relativePath) &&
-				fs.existsSync(absolutePath)
-			);
-		})
-		.map(({ absolutePath }) => absolutePath);
+	const hasIncludePatterns = include.length > 0;
+
+	const isUserIncluded = (relativePath: string) => {
+		if (!hasIncludePatterns) return true;
+
+		return micromatch.isMatch(relativePath, include, {
+			dot: true,
+		});
+	};
+
+	return normalizedFiles.filter(({absolutePath, relativePath}) => {
+		if (
+			!fs.existsSync(absolutePath) ||
+			!isWithinProject(relativePath) ||
+			isExcludedPath(relativePath) ||
+			isTestFile(relativePath) ||
+			ignoredPaths.has(relativePath)
+		) {
+			return false;
+		}
+		if (!isUserIncluded(relativePath)) {
+			return false;
+		}
+		// exclude precedence over include
+		if (isUserExcluded(relativePath)) {
+			return false;
+		}
+		return hasAllowedExtension(relativePath, extraSet);
+	}).map(({absolutePath}) => absolutePath);
 };
 
 const filterExplicitFiles = (

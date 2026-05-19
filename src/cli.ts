@@ -39,9 +39,10 @@ interface ScanFlags {
 	verbose?: boolean;
 	json?: boolean;
 	exclude?: string[];
+	include?: string[];
 }
 
-const excludeParser = (value: string, previous: string[] = []): string[] => {
+const commaSeparatedParser = (value: string, previous: string[] = []): string[] => {
 	const parts = value
 		.split(",")
 		.map((v) => v.trim())
@@ -51,15 +52,24 @@ const excludeParser = (value: string, previous: string[] = []): string[] => {
 
 const runScan = async (directory: string, flags: ScanFlags): Promise<void> => {
 	const config = loadConfig(directory);
-	const finalConfig = flags.exclude?.length
-		? { ...config, exclude: [...(config.exclude ?? []), ...flags.exclude] }
-		: config;
-	const { exitCode } = await scanCommand(directory, finalConfig, {
+	const finalConfig = {
+		...config,
+		exclude: [
+			...(config.exclude ?? []),
+			...(flags.exclude ?? []),
+		],
+		include: [
+			...(config.include ?? []),
+			...(flags.include ?? []),
+		],
+	};
+	const {exitCode} = await scanCommand(directory, finalConfig, {
 		changes: Boolean(flags.changes),
 		staged: Boolean(flags.staged),
 		verbose: Boolean(flags.verbose),
 		json: Boolean(flags.json),
 		exclude: flags.exclude,
+		include: flags.include,
 	});
 	if (exitCode !== 0) {
 		await flushTelemetry();
@@ -72,7 +82,8 @@ const noFlagsPassed = (flags: ScanFlags): boolean =>
 	!flags.staged &&
 	!flags.verbose &&
 	!flags.json &&
-	!(flags.exclude && flags.exclude.length > 0);
+	!(flags.exclude && flags.exclude.length > 0) &&
+	!(flags.include && flags.include.length > 0);
 
 const program = new Command()
 	.name("aislop")
@@ -86,7 +97,13 @@ const program = new Command()
 	.option(
 		"--exclude <patterns>",
 		"comma-separated or repeatable list of paths and files to exclude",
-		excludeParser,
+		commaSeparatedParser,
+		[],
+	)
+	.option(
+		"--include <patterns>",
+		"comma-separated or repeatable list of paths and files to include",
+		commaSeparatedParser,
 		[],
 	)
 	.action(async (directory: string, flags: ScanFlags) => {
@@ -141,9 +158,14 @@ program
 	.option(
 		"--exclude <patterns>",
 		"comma-separated or repeatable list of paths and files to exclude",
-		excludeParser,
+		commaSeparatedParser,
 		[],
-	)
+	).option(
+	"--include <patterns>",
+	"comma-separated or repeatable list of paths and files to include",
+	commaSeparatedParser,
+	[],
+)
 	.action(async (directory = ".", _flags, command) => {
 		await runScan(directory, command.optsWithGlobals() as ScanFlags);
 	});
@@ -200,7 +222,7 @@ program
 	.action(async (directory = ".", _flags, command) => {
 		const flags = command.optsWithGlobals() as { strict?: boolean };
 		await withCommandLifecycle(
-			{ command: "init", config: loadConfig(directory).telemetry },
+			{command: "init", config: loadConfig(directory).telemetry},
 			async () => {
 				await initCommand(directory, { strict: Boolean(flags.strict) });
 				return { exitCode: 0 };

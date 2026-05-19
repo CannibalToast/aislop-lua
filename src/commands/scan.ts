@@ -33,6 +33,7 @@ interface ScanOptions {
 	showHeader?: boolean;
 	printBrand?: boolean;
 	exclude?: string[];
+	include?: string[];
 	/** Used for telemetry to distinguish scan vs ci invocation */
 	command?: "scan" | "ci";
 }

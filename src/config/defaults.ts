@@ -1,8 +1,9 @@
-import type { AislopConfig } from "./schema.js";
+import type {AislopConfig} from "./schema.js";
 
 export const DEFAULT_CONFIG: AislopConfig = {
 	version: 1,
 	exclude: ["node_modules", ".git", "dist", "build", "coverage"],
+	include: [],
 	engines: {
 		format: true,
 		lint: true,

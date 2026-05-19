@@ -25,6 +25,7 @@
 		"test": "pnpm build && vitest run",
 		"scan": "pnpm build && node dist/cli.js scan .",
 		"scan:exclude": "pnpm build && node dist/cli.js scan . --exclude .idea --exclude .gitnore --exclude node_modules",
+		"scan:include": "pnpm build && node dist/cli.js scan . --include src --include tests",
 		"scan:json": "pnpm build && node dist/cli.js scan . --json",
 		"quality": "pnpm typecheck && pnpm test && node dist/cli.js scan . --json"
 	},
