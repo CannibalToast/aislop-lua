@@ -46,6 +46,15 @@ afterEach(() => {
 // ─── Unused Imports ──────────────────────────────────────────────────────────
 
 describe("unused imports", () => {
+	it("does not flag `from __future__ import` (a parser directive, not a name)", async () => {
+		const filePath = writeFile(
+			"future.py",
+			"from __future__ import annotations\n\nx: int = 1\n",
+		);
+		const diagnostics = await detectUnusedImports(makeContext([filePath]));
+		expect(diagnostics.filter((d) => d.rule === "ai-slop/unused-import")).toEqual([]);
+	});
+
 	it("detects an unused named import", async () => {
 		const filePath = writeFile(
 			"unused.ts",
@@ -318,6 +327,25 @@ describe("hardcoded config literals", () => {
 		);
 		const diagnostics = await detectHardcodedConfigLiterals(makeContext([filePath]));
 		expect(diagnostics.filter((d) => d.rule === "ai-slop/hardcoded-url")).toEqual([]);
+	});
+
+	it("does not flag stable third-party vendor API hosts", async () => {
+		const filePath = writeFile(
+			"github.ts",
+			[
+				'const res = await fetch("https://api.github.com/user");',
+				'const orgs = await fetch("https://api.github.com/user/orgs");',
+				'res.redirect("https://github.com/login/oauth/authorize");',
+			].join("\n"),
+		);
+		const diagnostics = await detectHardcodedConfigLiterals(makeContext([filePath]));
+		expect(diagnostics.filter((d) => d.rule === "ai-slop/hardcoded-url")).toEqual([]);
+	});
+
+	it("still flags a deployment/own environment URL", async () => {
+		const filePath = writeFile("redirect.ts", 'res.redirect(301, "https://app.acme-prod.com");');
+		const diagnostics = await detectHardcodedConfigLiterals(makeContext([filePath]));
+		expect(diagnostics.filter((d) => d.rule === "ai-slop/hardcoded-url")).toHaveLength(1);
 	});
 
 	it("does not flag documentation links", async () => {
