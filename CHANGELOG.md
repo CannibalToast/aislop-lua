@@ -11,6 +11,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **Suppression.** Silence a finding you have judged intentional with an inline directive: `// aislop-ignore-next-line [rule...]` (line below), `// aislop-ignore-line [rule...]` (same line), or `// aislop-ignore-file [rule...]` (whole file). Name one or more rules to scope it, or omit them to silence every rule on that line, and add a reason after `--`. Works in any comment syntax (`//`, `#`, `<!-- -->`). Directive lines are invisible to the comment engines, so they never join a comment block or get flagged themselves. Suppressed findings are dropped before scoring, and the run reports how many were silenced.
 - **`.aislopignore`.** A root-level ignore file (same glob semantics as the `exclude` config, with `#` comments) to keep whole paths out of every scan.
 
+### Fixed
+
+- **No-downgrade guard on dependency fixes.** `aislop fix -f` no longer writes a dependency override that pins a package below the version already installed. Before applying npm/pnpm overrides it reads the installed version and drops any that would be a downgrade, reporting them as "skipped downgrade(s), verify intent" instead of silently regressing a dependency the way `npm audit fix --force` does.
+- **CVE root-cause collapse.** The dependency audit now attributes a transitive vulnerability to the package that actually carries the advisory rather than emitting a near-duplicate finding for every intermediate package in the chain, so one root CVE reads as one issue instead of ten.
+
 ## 0.10.1 (2026-05-30)
 
 An accuracy release across Python and TypeScript, plus a small quality-of-life feature. The Python function detector was only seeing single-line synchronous `def`s, so async functions and wrapped multi-line signatures (about 58% of a large library like python-telegram-bot) were invisible to the complexity rules. In TypeScript, text-pattern rules were matching code inside JSDoc `@example` blocks as if it were live source. Both are fixed, and the complexity metrics were sharpened to measure real complexity rather than documentation or optional API surface.
