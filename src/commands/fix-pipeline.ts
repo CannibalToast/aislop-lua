@@ -53,6 +53,8 @@ export interface PipelineDeps {
 	resolvedDir: string;
 	projectInfo: ProjectInfo;
 	force: boolean;
+	// Restrict to reversible fixes only (imports, comment removal, formatting).
+	safe: boolean;
 	runStep: RunStepFn;
 }
 
@@ -73,6 +75,17 @@ export const runAiSlopSteps = async (deps: PipelineDeps): Promise<void> => {
 		() => detectDuplicateImports(deps.context),
 		() => fixDuplicateImports(deps.context),
 	);
+
+	// Dead-pattern removal deletes code (console statements, dead branches), so in
+	// safe mode we keep only narrative-comment removal, which is reversible.
+	if (deps.safe) {
+		await deps.runStep(
+			"Narrative comments",
+			async () => (await detectNarrativeComments(deps.context)).filter((d) => d.fixable),
+			() => fixNarrativeComments(deps.context),
+		);
+		return;
+	}
 
 	const detectFixableSlop = async () => {
 		const [comments, dead, narrative] = await Promise.all([
