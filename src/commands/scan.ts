@@ -14,7 +14,7 @@ import { renderHeader } from "../ui/header.js";
 import { type GridRow, type GridRowOutcome, LiveGrid } from "../ui/live-grid.js";
 import { log } from "../ui/logger.js";
 import { discoverProject } from "../utils/discover.js";
-import { getChangedFiles, getStagedFiles } from "../utils/git.js";
+import { baseRefExists, getChangedFiles, getStagedFiles } from "../utils/git.js";
 import { appendHistory } from "../utils/history.js";
 import {
 	filterProjectFiles,
@@ -32,6 +32,7 @@ export { buildScanRender } from "./scan-render.js";
 interface ScanOptions {
 	changes: boolean;
 	staged: boolean;
+	base?: string;
 	verbose: boolean;
 	json: boolean;
 	sarif?: boolean;
@@ -70,6 +71,16 @@ export const scanCommand = async (
 	}
 	if (!fs.statSync(resolvedDir).isDirectory()) {
 		const msg = `Not a directory: ${resolvedDir}`;
+		if (options.json) {
+			console.log(JSON.stringify({ error: msg }, null, 2));
+		} else {
+			log.error(msg);
+		}
+		return { exitCode: 1 };
+	}
+
+	if (options.changes && options.base && !baseRefExists(resolvedDir, options.base)) {
+		const msg = `Could not resolve base ref "${options.base}". Make sure it exists and was fetched (e.g. \`git fetch origin ${options.base}\`).`;
 		if (options.json) {
 			console.log(JSON.stringify({ error: msg }, null, 2));
 		} else {
@@ -126,9 +137,15 @@ const runScanBody = async (
 			log.muted(`Scope: ${files.length} staged file(s)`);
 		}
 	} else if (options.changes) {
-		files = filterProjectFiles(resolvedDir, getChangedFiles(resolvedDir), [], excludePatterns);
+		files = filterProjectFiles(
+			resolvedDir,
+			getChangedFiles(resolvedDir, options.base),
+			[],
+			excludePatterns,
+		);
 		if (!machineOutput) {
-			log.muted(`Scope: ${files.length} changed file(s)`);
+			const scope = options.base ? `changed vs ${options.base}` : "changed";
+			log.muted(`Scope: ${files.length} ${scope} file(s)`);
 		}
 	} else {
 		const allFiles = listProjectFiles(resolvedDir);

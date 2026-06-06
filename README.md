@@ -2,14 +2,7 @@
 
 **Catch the slop AI coding agents leave in your code.**
 
-[![npm version](https://img.shields.io/npm/v/aislop.svg)](https://www.npmjs.com/package/aislop)
-[![npm downloads](https://img.shields.io/npm/dm/aislop.svg)](https://www.npmjs.com/package/aislop)
-[![PyPI downloads](https://img.shields.io/pepy/dt/aislop.svg?label=PyPI%20downloads)](https://pypi.org/project/aislop/)
-[![Homebrew tap](https://img.shields.io/badge/Homebrew-scanaislop%2Ftap-2f855a.svg)](https://github.com/scanaislop/homebrew-tap)
-[![CI](https://github.com/scanaislop/aislop/actions/workflows/ci.yml/badge.svg)](https://github.com/scanaislop/aislop/actions/workflows/ci.yml)
-[![aislop score](https://badges.scanaislop.com/score/scanaislop/aislop.svg)](https://scanaislop.com/scanaislop/aislop)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Node >= 20](https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg)](https://nodejs.org)
+[![npm version](https://img.shields.io/npm/v/aislop.svg)](https://www.npmjs.com/package/aislop) [![npm downloads](https://img.shields.io/npm/dm/aislop.svg)](https://www.npmjs.com/package/aislop) [![PyPI downloads](https://img.shields.io/pepy/dt/aislop.svg?label=PyPI%20downloads)](https://pypi.org/project/aislop/) [![Homebrew tap](https://img.shields.io/badge/Homebrew-scanaislop%2Ftap-2f855a.svg)](https://github.com/scanaislop/homebrew-tap) [![CI](https://github.com/scanaislop/aislop/actions/workflows/ci.yml/badge.svg)](https://github.com/scanaislop/aislop/actions/workflows/ci.yml) [![aislop score](https://badges.scanaislop.com/score/scanaislop/aislop.svg)](https://scanaislop.com/scanaislop/aislop) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT) [![Node >= 20](https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg)](https://nodejs.org)
 
 The patterns Claude Code, Cursor, Codex, and OpenCode leave behind: narrative comments above self-explanatory code, swallowed exceptions, `as any` casts, hallucinated imports, duplicated helpers, dead code, todo stubs, oversized functions. Tests pass. Lint passes. The code rots anyway.
 
@@ -23,12 +16,14 @@ npx aislop@latest scan
 
 No install needed. Works on any project. Get your score in seconds.
 
-Prefer a persistent install? The same CLI ships through three channels:
+Also available on npm, Yarn, Bun, Homebrew, and PyPI:
 
 ```bash
-brew install scanaislop/tap/aislop   # macOS / Linux (Homebrew)
-pipx install aislop                  # Python (pipx)
-npm install -g aislop                # Node (global)
+npm install -g aislop                # npm
+yarn dlx aislop scan                 # Yarn (no install)
+bun add -g aislop                    # Bun
+brew install scanaislop/tap/aislop   # Homebrew
+pipx install aislop                  # Python
 ```
 
 See [Installation](#installation) for every option.
@@ -74,6 +69,9 @@ yarn add --dev aislop
 
 # pnpm
 pnpm add -D aislop
+
+# bun
+bun add -d aislop
 
 # Global
 npm install -g aislop
@@ -122,6 +120,7 @@ aislop update              # current and latest npm versions
 aislop scan                       # current directory
 aislop scan ./src                 # specific directory
 aislop scan --changes             # changed files from HEAD
+aislop scan --changes --base origin/main  # changed vs a base branch (PRs)
 aislop scan --staged              # staged files only
 aislop scan -d                    # verbose file/rule detail
 aislop scan --json                # JSON output
@@ -269,9 +268,12 @@ Expose aislop as MCP tools for Claude Desktop, Cursor, Codex:
 
 ```bash
 aislop ci                  # JSON output, exits 1 if score < threshold
+aislop ci --changes --base origin/main  # gate only the files a PR changes
 aislop ci --human          # human-friendly CI output
 aislop ci --sarif          # SARIF output for code scanning
 ```
+
+`ci` accepts the same `--changes` / `--staged` / `--base <ref>` scoping as `scan`. Use `--changes --base origin/<target>` to gate a pull request on only the files it touches; the score gate and exit code still apply.
 
 ### Other commands
 
@@ -313,14 +315,14 @@ Or wire it into the [pre-commit](https://pre-commit.com) framework via the bundl
 # .pre-commit-config.yaml
 repos:
   - repo: https://github.com/scanaislop/aislop
-    rev: v0.10.2
+    rev: v1
     hooks:
       - id: aislop
 ```
 
 ### GitHub Actions
 
-Run `aislop init` and accept the workflow prompt, or add manually:
+Run `aislop init` and accept the workflow prompt, or add manually. The self-contained form always runs the latest CLI, so there's nothing to bump:
 
 ```yaml
 name: aislop
@@ -335,30 +337,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - uses: scanaislop/aislop@v0.10.2
+      - uses: actions/setup-node@v4
         with:
-          version: latest
+          node-version: 24
+      - run: npx --yes aislop@latest ci
 ```
 
-`uses: scanaislop/aislop@v0.10.2` pins the GitHub Action wrapper. `version: latest` follows the latest npm CLI. For fully deterministic CI, set both to the same release:
+Prefer the Marketplace Action? `@v1` tracks the latest release and `version: latest` keeps the CLI current. Pin `@v0.10.2` and a `version` for reproducible builds:
 
 ```yaml
 - uses: actions/checkout@v4
-
-- uses: scanaislop/aislop@v0.10.2
+- uses: scanaislop/aislop@v1
   with:
-    version: "0.10.2"
-```
-
-Manual workflow without the Marketplace Action:
-
-```yaml
-- uses: actions/checkout@v4
-- uses: actions/setup-node@v4
-  with:
-    node-version: 20
-- run: npx --yes aislop@latest ci .
+    version: latest
 ```
 
 **GitHub code scanning (SARIF)**: emit a SARIF 2.1.0 report and upload it so findings appear in the Security tab:
@@ -369,6 +360,27 @@ Manual workflow without the Marketplace Action:
   with:
     sarif_file: aislop.sarif
 ```
+
+### Bitbucket Pipelines
+
+Bitbucket clones shallow by default, so fetch the PR target branch and gate on only the changed files with `ci --changes --base`:
+
+```yaml
+# bitbucket-pipelines.yml
+pipelines:
+  pull-requests:
+    "**":
+      - step:
+          name: aislop gate
+          image: node:24
+          clone:
+            depth: full   # branch diffs need history
+          script:
+            - git fetch origin "$BITBUCKET_PR_DESTINATION_BRANCH"
+            - npx --yes aislop@latest ci --changes --base FETCH_HEAD
+```
+
+`ci` applies the score gate and exit code, so no JSON parsing or hand-rolled threshold is needed. More providers: [CI/CD](docs/ci.md).
 
 ### Quality gate
 
