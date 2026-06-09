@@ -110,3 +110,34 @@ This applies to regex patterns, string literals, and diagnostic messages in all 
 - The `files` field in `package.json` controls what ships to npm. Only `dist` and `scripts`
 - PostHog telemetry key is a public client-side key (safe to hardcode)
 - Telemetry is opt-out and off in CI by default
+
+## Cursor Cloud specific instructions
+
+This is a **CLI-only** repo — there is no web server, database, or Docker Compose stack to start. Development is build-and-run via Node.js.
+
+### Prerequisites
+
+- **Node.js** >= 20 (`.nvmrc` pins 24; CI tests Node 22 and 24)
+- **pnpm** 10.28.0 (declared in `packageManager` in `package.json`; enable via `corepack enable`)
+
+### Common commands
+
+| Task | Command |
+|------|---------|
+| Install deps | `pnpm install --frozen-lockfile` |
+| Watch rebuild | `pnpm dev` (tsdown --watch; rebuilds `dist/` on save) |
+| Typecheck | `pnpm typecheck` |
+| Build | `pnpm build` |
+| Test (build + vitest) | `pnpm test` |
+| Fast test iteration | `pnpm vitest run` (after a manual `pnpm build`) |
+| Self-scan | `pnpm scan` or `node dist/cli.js scan .` |
+| Run CLI | `node dist/cli.js <command>` or `pnpm exec aislop <command>` |
+| Environment check | `node dist/cli.js doctor` |
+
+### Gotchas
+
+- **Postinstall downloads**: `pnpm install` runs `scripts/postinstall-tools.mjs`, which downloads bundled `ruff` and `golangci-lint` binaries into `tools/bin/`. Skip with `AISLOP_SKIP_TOOL_DOWNLOAD=1` if network is unavailable.
+- **Telemetry**: Set `AISLOP_NO_TELEMETRY=1` when running the CLI in automated/cloud sessions.
+- **No `pnpm lint` script**: CI uses `pnpm typecheck`, `pnpm build`, and `pnpm vitest run`. Biome is available via `pnpm exec biome check <path>` for ad-hoc formatting checks.
+- **Self-scan gate**: `pnpm scan` must pass (score 100) before merging; the repo scans itself and detector source must avoid literal pattern strings (see Self-detection avoidance above).
+- **Optional language tools**: Go, Rust, Ruby, and PHP engines require those toolchains on PATH; `aislop doctor` reports what is available. Core TypeScript/JS development works with bundled tools only.
