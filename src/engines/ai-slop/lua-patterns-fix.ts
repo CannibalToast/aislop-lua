@@ -38,7 +38,7 @@ const applyLineFixes = (
 		for (const rule of rules) {
 			if (!rule.fixLine) continue;
 			const fixed = rule.fixLine(line, target);
-			if (!fixed || fixed === line) continue;
+			if (fixed === null || fixed === line) continue;
 			line = fixed;
 			changed = true;
 		}

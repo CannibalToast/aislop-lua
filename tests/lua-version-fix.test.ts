@@ -121,4 +121,47 @@ describe("Lua version auto-fixes", () => {
 		const rule = diagnostics.find((d) => d.rule === "ai-slop/lua-version-goto");
 		expect(rule?.fixable).toBe(false);
 	});
+
+	it("fixes legacy string and table APIs on Lua 5.4 target", async () => {
+		fs.writeFileSync(path.join(tmpDir, "stylua.toml"), 'syntax = "Lua54"\n');
+		writeLua(
+			"legacy.lua",
+			"for word in string.gfind(line, '%w+') do end\nlocal n = table.getn(items)\ntable.setn(items, 0)\n",
+		);
+		await fixLuaPatterns(makeContext(tmpDir));
+		const content = readLua("legacy.lua");
+		expect(content).toContain("string.gmatch(line, '%w+')");
+		expect(content).toContain("#(items)");
+		expect(content).not.toContain("table.setn");
+	});
+
+	it("fixes package loaders rename on Lua 5.4 target", async () => {
+		fs.writeFileSync(path.join(tmpDir, "stylua.toml"), 'syntax = "Lua54"\n');
+		writeLua("loader.lua", "local loaders = package.loaders\n");
+		await fixLuaPatterns(makeContext(tmpDir));
+		expect(readLua("loader.lua")).toContain("package.searchers");
+	});
+
+	it("fixes package.searchers down to loaders on Lua 5.1 target", async () => {
+		fs.writeFileSync(path.join(tmpDir, "stylua.toml"), 'syntax = "Lua51"\n');
+		writeLua("loader.lua", "local loaders = package.searchers\n");
+		await fixLuaPatterns(makeContext(tmpDir));
+		expect(readLua("loader.lua")).toContain("package.loaders");
+	});
+
+	it("fixes removed math helpers on Lua 5.4 target", async () => {
+		fs.writeFileSync(path.join(tmpDir, "stylua.toml"), 'syntax = "Lua54"\n');
+		writeLua("math.lua", "local x = math.log10(100)\nlocal y = math.ldexp(1.5, 3)\n");
+		await fixLuaPatterns(makeContext(tmpDir));
+		const content = readLua("math.lua");
+		expect(content).toContain("math.log(100, 10)");
+		expect(content).toContain("(1.5 * 2.0 ^ 3)");
+	});
+
+	it("fixes loadlib on Lua 5.4 target", async () => {
+		fs.writeFileSync(path.join(tmpDir, "stylua.toml"), 'syntax = "Lua54"\n');
+		writeLua("cmod.lua", "local lib = loadlib('foo.so', 'init')\n");
+		await fixLuaPatterns(makeContext(tmpDir));
+		expect(readLua("cmod.lua")).toContain("package.loadlib('foo.so', 'init')");
+	});
 });

@@ -78,4 +78,18 @@ describe("detectLuaPatterns", () => {
 		const diagnostics = await detectLuaPatterns(makeContext(tmpDir));
 		expect(diagnostics).toHaveLength(0);
 	});
+
+	it("flags table.foreach on Lua 5.4 target", async () => {
+		fs.writeFileSync(path.join(tmpDir, "stylua.toml"), 'syntax = "Lua54"\n');
+		writeLua("iter.lua", "table.foreach(t, function(k, v) end)\n");
+		const diagnostics = await detectLuaPatterns(makeContext(tmpDir));
+		expect(diagnostics.some((d) => d.rule === "ai-slop/lua-version-table-foreach")).toBe(true);
+	});
+
+	it("flags math.frexp on Lua 5.4 target", async () => {
+		fs.writeFileSync(path.join(tmpDir, "stylua.toml"), 'syntax = "Lua54"\n');
+		writeLua("float.lua", "local m, e = math.frexp(x)\n");
+		const diagnostics = await detectLuaPatterns(makeContext(tmpDir));
+		expect(diagnostics.some((d) => d.rule === "ai-slop/lua-version-math-frexp")).toBe(true);
+	});
 });

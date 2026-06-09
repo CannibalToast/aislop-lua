@@ -119,6 +119,20 @@ The rules that make aislop unique. These catch the patterns AI assistants leave 
 | `ai-slop/lua-version-math-atan2` | warning | `math.atan2` on Lua 5.3+ (auto-fix: `math.atan`) |
 | `ai-slop/lua-version-math-pow` | warning | `math.pow` on Lua 5.3+ (auto-fix: `^` operator) |
 | `ai-slop/lua-version-math-mod` | warning | `math.mod` on Lua 5.1+ (auto-fix: `%` operator) |
+| `ai-slop/lua-version-gfind` | warning | `string.gfind` on Lua 5.1+ (auto-fix: `string.gmatch`) |
+| `ai-slop/lua-version-table-getn` | warning | `table.getn` on Lua 5.2+ (auto-fix: `#` operator) |
+| `ai-slop/lua-version-table-setn` | warning | `table.setn` on Lua 5.2+ (auto-fix: remove call) |
+| `ai-slop/lua-version-table-maxn` | warning | `table.maxn` on Lua 5.2+ |
+| `ai-slop/lua-version-table-foreach` | warning | `table.foreach` / `table.foreachi` on Lua 5.2+ |
+| `ai-slop/lua-version-package-loaders` | warning | `package.loaders` on Lua 5.2+ (auto-fix: `package.searchers`) |
+| `ai-slop/lua-version-package-searchers` | warning | `package.searchers` when target is older than 5.2 (auto-fix: `package.loaders`) |
+| `ai-slop/lua-version-table-pack` | warning | `table.pack` when target is older than 5.2 |
+| `ai-slop/lua-version-loadlib` | warning | global `loadlib` on Lua 5.1+ (auto-fix: `package.loadlib`) |
+| `ai-slop/lua-version-math-log10` | warning | `math.log10` on Lua 5.3+ (auto-fix: `math.log(x, 10)`) |
+| `ai-slop/lua-version-math-ldexp` | warning | `math.ldexp` on Lua 5.3+ (auto-fix: `x * 2.0^exp`) |
+| `ai-slop/lua-version-math-frexp` | warning | `math.frexp` on Lua 5.3+ |
+| `ai-slop/lua-version-math-hyperbolic` | warning | `math.cosh` / `sinh` / `tanh` on Lua 5.3+ |
+| `ai-slop/lua-version-debug-fenv` | warning | `debug.getfenv` / `debug.setfenv` on Lua 5.2+ |
 | `ai-slop/hallucinated-import` | error | Imports of JS/TS packages that are not declared in the project manifest |
 
 ## Security
