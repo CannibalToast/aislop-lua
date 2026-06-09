@@ -5,7 +5,8 @@ import { runSubprocess } from "../../utils/subprocess.js";
 import type { Diagnostic, EngineContext } from "../types.js";
 import { isLuacheckFixable } from "./luacheck-fix.js";
 
-const LUACHECK_LINE_RE = /^(.+?):(\d+):(\d+):\s*(.+?)(?:\s+\((?:W)?(\d+)\))?$/;
+const LUACHECK_LINE_RE =
+	/^(.+?):(\d+):(\d+):\s*(?:\((?:W)?(\d+)\)\s+)?(.+?)(?:\s+\((?:W)?(\d+)\))?$/;
 
 export const runLuacheck = async (context: EngineContext): Promise<Diagnostic[]> => {
 	try {
@@ -27,7 +28,8 @@ export const runLuacheck = async (context: EngineContext): Promise<Diagnostic[]>
 		for (const line of output.split("\n")) {
 			const match = LUACHECK_LINE_RE.exec(line.trim());
 			if (!match) continue;
-			const [, file, lineNo, col, message, code] = match;
+			const [, file, lineNo, col, codePrefix, message, codeSuffix] = match;
+			const code = codePrefix ?? codeSuffix;
 			const relPath = path.isAbsolute(file) ? path.relative(context.rootDirectory, file) : file;
 			diagnostics.push({
 				filePath: relPath,
