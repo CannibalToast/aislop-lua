@@ -3,8 +3,9 @@ import { luacheckStdFor } from "../../lua/versions.js";
 import { resolveLuaVersion } from "../../utils/lua-version.js";
 import { runSubprocess } from "../../utils/subprocess.js";
 import type { Diagnostic, EngineContext } from "../types.js";
+import { isLuacheckFixable } from "./luacheck-fix.js";
 
-const LUACHECK_LINE_RE = /^(.+?):(\d+):(\d+):\s*(.+?)(?:\s+\(([A-Z]\d+)\))?$/;
+const LUACHECK_LINE_RE = /^(.+?):(\d+):(\d+):\s*(.+?)(?:\s+\((?:W)?(\d+)\))?$/;
 
 export const runLuacheck = async (context: EngineContext): Promise<Diagnostic[]> => {
 	try {
@@ -12,7 +13,7 @@ export const runLuacheck = async (context: EngineContext): Promise<Diagnostic[]>
 		const std = luacheckStdFor(luaVersion);
 		const result = await runSubprocess(
 			"luacheck",
-			["--no-color", "--std", std, context.rootDirectory],
+			["--no-color", "--codes", "--std", std, context.rootDirectory],
 			{
 				cwd: context.rootDirectory,
 				timeout: 120000,
@@ -38,7 +39,7 @@ export const runLuacheck = async (context: EngineContext): Promise<Diagnostic[]>
 				line: parseInt(lineNo, 10),
 				column: parseInt(col, 10),
 				category: "Lua Lint",
-				fixable: false,
+				fixable: isLuacheckFixable(code),
 			});
 		}
 		return diagnostics;

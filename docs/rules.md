@@ -30,6 +30,8 @@ Catches bugs and bad practices.
 | Ruby | rubocop |
 | Lua | luacheck |
 
+`aislop fix` applies safe luacheck autofixes (no native `--fix` flag) using the same patterns as other linters: prefix unused locals/args with `_`, add `local` to implicit globals, remove unreachable or empty code, flip negated relations, and trim whitespace. Fixable codes: `111`, `131`, `211`–`213`, `231`–`233`, `511`, `521`, `541`, `542`, `551`, `581`, `582`, `611`, `612`, `614`. Formatting issues (`6xx` line length, indentation) are left to StyLua.
+
 ## Code Quality
 
 Measures structural complexity, finds dead code, and detects unused dependencies.

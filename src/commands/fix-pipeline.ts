@@ -28,6 +28,8 @@ import { fixRuffFormat, runRuffFormat } from "../engines/format/ruff-format.js";
 import { fixStylua, runStylua } from "../engines/format/stylua.js";
 import { runExpoDoctor } from "../engines/lint/expo-doctor.js";
 import { fixRubyLint } from "../engines/lint/generic.js";
+import { fixLuacheck } from "../engines/lint/luacheck-fix.js";
+import { runLuacheck } from "../engines/lint/luacheck.js";
 import { fixOxlint, runOxlint } from "../engines/lint/oxlint.js";
 import { fixRuffLint, fixRuffLintForce, runRuffLint } from "../engines/lint/ruff.js";
 import { runDependencyAudit } from "../engines/security/audit.js";
@@ -160,6 +162,16 @@ export const runLintSteps = async (deps: PipelineDeps): Promise<void> => {
 		);
 	} else if (deps.projectInfo.languages.includes("ruby")) {
 		log.warn("Ruby detected but rubocop is not installed; skipping Ruby lint fixes.");
+	}
+
+	if (deps.projectInfo.languages.includes("lua") && deps.projectInfo.installedTools.luacheck) {
+		await deps.runStep(
+			"Lint fixes (lua)",
+			async () => (await runLuacheck(deps.context)).filter((d) => d.fixable),
+			() => fixLuacheck(deps.context),
+		);
+	} else if (deps.projectInfo.languages.includes("lua")) {
+		log.warn("Lua detected but luacheck is not installed; skipping Lua lint fixes.");
 	}
 };
 
