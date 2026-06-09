@@ -140,4 +140,4 @@ This is a **CLI-only** repo — there is no web server, database, or Docker Comp
 - **Telemetry**: Set `AISLOP_NO_TELEMETRY=1` when running the CLI in automated/cloud sessions.
 - **No `pnpm lint` script**: CI uses `pnpm typecheck`, `pnpm build`, and `pnpm vitest run`. Biome is available via `pnpm exec biome check <path>` for ad-hoc formatting checks.
 - **Self-scan gate**: `pnpm scan` must pass (score 100) before merging; the repo scans itself and detector source must avoid literal pattern strings (see Self-detection avoidance above).
-- **Optional language tools**: Go, Rust, Ruby, and PHP engines require those toolchains on PATH; `aislop doctor` reports what is available. Core TypeScript/JS development works with bundled tools only.
+- **Optional language tools**: Go, Rust, Ruby, PHP, and Lua engines require those toolchains on PATH (`stylua`, `luacheck` for Lua); `aislop doctor` reports what is available. Core TypeScript/JS development works with bundled tools only.
