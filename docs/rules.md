@@ -92,7 +92,7 @@ The rules that make aislop unique. These catch the patterns AI assistants leave 
 | `ai-slop/rust-non-test-unwrap` | warning | Rust `.unwrap()` in production code where errors should be handled or documented |
 | `ai-slop/rust-todo-stub` | warning | Rust `todo!()` stubs in production code |
 | `ai-slop/lua-print-debug` | warning | Lua `print(...)` debug output left in production modules |
-| `ai-slop/lua-global-assign` | warning | Lua assignments that create globals instead of `local` variables |
+| `ai-slop/lua-global-assign` | warning | Lua assignments that create globals instead of `local` (auto-fix: add `local`) |
 | `ai-slop/lua-version-goto` | warning | `goto` used when the project's Lua target is older than 5.2 |
 | `ai-slop/lua-version-label` | warning | goto labels used when the project's Lua target is older than 5.2 |
 | `ai-slop/lua-version-integer-division` | warning | Floor division `//` used when the project's Lua target is older than 5.3 |
@@ -100,6 +100,23 @@ The rules that make aislop unique. These catch the patterns AI assistants leave 
 | `ai-slop/lua-version-const` | warning | `const` variables used when the project's Lua target is older than 5.4 |
 | `ai-slop/lua-version-close` | warning | to-be-closed variables used when the project's Lua target is older than 5.4 |
 | `ai-slop/lua-version-declare` | warning | Global `declare` used when the project's Lua target is older than 5.5 |
+| `ai-slop/lua-version-warn` | warning | `warn()` used when the project's Lua target is older than 5.4 (auto-fix: `print`) |
+| `ai-slop/lua-version-string-pack` | warning | `string.pack` / `string.unpack` used when target is older than 5.3 |
+| `ai-slop/lua-version-utf8` | warning | `utf8.*` used when target is older than 5.3 |
+| `ai-slop/lua-version-table-create` | warning | `table.create` used when target is older than 5.5 |
+| `ai-slop/lua-version-table-move` | warning | `table.move` used when target is older than 5.3 |
+| `ai-slop/lua-version-table-unpack` | warning | `table.unpack` used when target is older than 5.2 (auto-fix: `unpack`) |
+| `ai-slop/lua-version-env` | warning | `_ENV` used when target is older than 5.2 |
+| `ai-slop/lua-version-len` | warning | `#` length operator used when target is Lua 5.0 |
+| `ai-slop/lua-version-loadstring` | warning | `loadstring` on Lua 5.2+ targets (auto-fix: `load`) |
+| `ai-slop/lua-version-setfenv` | warning | `setfenv` on Lua 5.2+ targets |
+| `ai-slop/lua-version-getfenv` | warning | `getfenv` on Lua 5.2+ targets |
+| `ai-slop/lua-version-module` | warning | `module()` on Lua 5.2+ targets |
+| `ai-slop/lua-version-bit32` | warning | `bit32.*` on Lua 5.3+ targets (auto-fix: native operators) |
+| `ai-slop/lua-version-unpack-global` | warning | global `unpack` on Lua 5.2+ (auto-fix: `table.unpack`) |
+| `ai-slop/lua-version-math-atan2` | warning | `math.atan2` on Lua 5.3+ (auto-fix: `math.atan`) |
+| `ai-slop/lua-version-math-pow` | warning | `math.pow` on Lua 5.3+ (auto-fix: `^` operator) |
+| `ai-slop/lua-version-math-mod` | warning | `math.mod` on Lua 5.1+ (auto-fix: `%` operator) |
 | `ai-slop/hallucinated-import` | error | Imports of JS/TS packages that are not declared in the project manifest |
 
 ## Security

@@ -16,7 +16,11 @@ export const buildFixStepNames = (
 	const stepNames: string[] = [];
 
 	if (config.engines["ai-slop"]) {
-		stepNames.push("Unused imports", "Dead code & comments");
+		stepNames.push("Unused imports");
+		if (projectInfo.languages.includes("lua")) {
+			stepNames.push("Lua version fixes");
+		}
+		stepNames.push("Dead code & comments");
 	}
 
 	if (config.engines.lint) {

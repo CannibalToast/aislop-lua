@@ -6,6 +6,8 @@ import { detectDuplicateImports } from "../engines/ai-slop/duplicate-imports.js"
 import { fixDuplicateImports } from "../engines/ai-slop/duplicate-imports-fix.js";
 import { detectNarrativeComments } from "../engines/ai-slop/narrative-comments.js";
 import { fixNarrativeComments } from "../engines/ai-slop/narrative-comments-fix.js";
+import { fixLuaPatterns } from "../engines/ai-slop/lua-patterns-fix.js";
+import { detectLuaPatterns } from "../engines/ai-slop/lua-patterns.js";
 import { detectUnusedImports } from "../engines/ai-slop/unused-imports.js";
 import { fixUnusedImports } from "../engines/ai-slop/unused-imports-fix.js";
 import {
@@ -76,6 +78,14 @@ export const runAiSlopSteps = async (deps: PipelineDeps): Promise<void> => {
 		() => detectDuplicateImports(deps.context),
 		() => fixDuplicateImports(deps.context),
 	);
+
+	if (deps.projectInfo.languages.includes("lua")) {
+		await deps.runStep(
+			"Lua version fixes",
+			async () => (await detectLuaPatterns(deps.context)).filter((d) => d.fixable),
+			() => fixLuaPatterns(deps.context),
+		);
+	}
 
 	// Dead-pattern removal deletes code (console statements, dead branches), so in
 	// safe mode we keep only narrative-comment removal, which is reversible.
