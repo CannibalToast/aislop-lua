@@ -14,6 +14,7 @@ Enforces consistent formatting using the best tool for each language.
 | Rust | cargo fmt |
 | Ruby | rubocop |
 | PHP | php-cs-fixer |
+| Lua | StyLua |
 
 ## Linting
 
@@ -27,6 +28,7 @@ Catches bugs and bad practices.
 | Go | golangci-lint |
 | Rust | clippy |
 | Ruby | rubocop |
+| Lua | luacheck |
 
 ## Code Quality
 
@@ -89,6 +91,15 @@ The rules that make aislop unique. These catch the patterns AI assistants leave 
 | `ai-slop/go-library-panic` | warning | Go `panic(...)` calls in non-main library code unless clearly intentional |
 | `ai-slop/rust-non-test-unwrap` | warning | Rust `.unwrap()` in production code where errors should be handled or documented |
 | `ai-slop/rust-todo-stub` | warning | Rust `todo!()` stubs in production code |
+| `ai-slop/lua-print-debug` | warning | Lua `print(...)` debug output left in production modules |
+| `ai-slop/lua-global-assign` | warning | Lua assignments that create globals instead of `local` variables |
+| `ai-slop/lua-version-goto` | warning | `goto` used when the project's Lua target is older than 5.2 |
+| `ai-slop/lua-version-label` | warning | goto labels used when the project's Lua target is older than 5.2 |
+| `ai-slop/lua-version-integer-division` | warning | Floor division `//` used when the project's Lua target is older than 5.3 |
+| `ai-slop/lua-version-bitwise` | warning | Bitwise operators used when the project's Lua target is older than 5.3 |
+| `ai-slop/lua-version-const` | warning | `const` variables used when the project's Lua target is older than 5.4 |
+| `ai-slop/lua-version-close` | warning | to-be-closed variables used when the project's Lua target is older than 5.4 |
+| `ai-slop/lua-version-declare` | warning | Global `declare` used when the project's Lua target is older than 5.5 |
 | `ai-slop/hallucinated-import` | error | Imports of JS/TS packages that are not declared in the project manifest |
 
 ## Security
@@ -99,6 +110,7 @@ Finds secrets, risky constructs, and vulnerable dependencies.
 |---|---|
 | `security/hardcoded-secret` | API keys, AWS credentials, JWT tokens, database URLs, passwords |
 | `security/eval` | `eval()` usage (JS/TS/Python/Ruby/PHP) |
+| `security/lua-load` | `load()` / `loadstring()` dynamic code loading in Lua |
 | `security/innerhtml` | Direct `.innerHTML` assignment |
 | `security/dangerously-set-innerhtml` | React `dangerouslySetInnerHTML` usage that needs sanitization |
 | `security/sql-injection` | String concatenation in SQL queries |
@@ -130,3 +142,4 @@ See [examples/architecture-rules.yml](../examples/architecture-rules.yml) for a 
 | Rust | cargo fmt | clippy | complexity | Comments | Secrets, audit |
 | Ruby | rubocop | rubocop | complexity | Exceptions, comments | Secrets |
 | PHP | php-cs-fixer | -- | complexity | Comments | Secrets |
+| Lua | StyLua | luacheck | complexity | Lua patterns, comments | Secrets, load/loadstring |

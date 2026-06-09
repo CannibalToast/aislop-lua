@@ -47,6 +47,10 @@ const FUNCTION_PATTERNS: FunctionPattern[] = [
 		langFilter: [".rs"],
 	},
 	{
+		regex: /^\s*(?:local\s+)?function\s+(\w+)\s*\(([^)]*)\)/,
+		langFilter: [".lua"],
+	},
+	{
 		regex: /^\s*(?:public|private|protected)?\s*(?:static\s+)?(?:\w+\s+)(\w+)\s*\(([^)]*)\)/,
 		langFilter: [".java", ".cs", ".cpp", ".c", ".php"],
 	},

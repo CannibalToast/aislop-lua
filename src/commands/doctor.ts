@@ -119,6 +119,7 @@ const primaryLanguage = (langs: Language[]): Language | null => {
 		"rust",
 		"ruby",
 		"php",
+		"lua",
 		"java",
 	];
 	for (const lang of order) {
@@ -178,6 +179,7 @@ const FORMAT_SPECS: LangToolSpec[] = [
 		"php-cs-fixer",
 		"Install: composer global require friendsofphp/php-cs-fixer",
 	),
+	spec("lua", "stylua", "stylua", "Install: cargo install stylua --locked"),
 ];
 
 const LINT_SPECS: LangToolSpec[] = [
@@ -185,6 +187,7 @@ const LINT_SPECS: LangToolSpec[] = [
 	spec("go", "golangci-lint", "golangci-lint", "Install: brew install golangci-lint"),
 	spec("rust", "clippy-driver", "clippy", "Install: rustup component add clippy"),
 	spec("ruby", "rubocop", "rubocop", "Install: gem install rubocop"),
+	spec("lua", "luacheck", "luacheck", "Install: luarocks install luacheck"),
 ];
 
 const planFormat = (ctx: PlanContext): ToolDecision => {

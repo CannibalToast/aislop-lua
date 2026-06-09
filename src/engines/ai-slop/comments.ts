@@ -107,6 +107,7 @@ const isCommentLineForExt = (line: string, ext: string): boolean => {
 	const trimmed = line.trim();
 	if (ext === ".rb") return trimmed.startsWith("#") && !trimmed.startsWith("#!");
 	if (ext === ".java" || ext === ".php") return trimmed.startsWith("//") || trimmed.startsWith("#");
+	if (ext === ".lua") return trimmed.startsWith("--") && !trimmed.startsWith("--[[");
 	return false;
 };
 

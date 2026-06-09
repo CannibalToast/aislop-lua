@@ -23,6 +23,7 @@ import { fixBiomeFormat, runBiomeFormat } from "../engines/format/biome.js";
 import { fixGenericFormatter, runGenericFormatter } from "../engines/format/generic.js";
 import { fixGofmt, runGofmt } from "../engines/format/gofmt.js";
 import { fixRuffFormat, runRuffFormat } from "../engines/format/ruff-format.js";
+import { fixStylua, runStylua } from "../engines/format/stylua.js";
 import { runExpoDoctor } from "../engines/lint/expo-doctor.js";
 import { fixRubyLint } from "../engines/lint/generic.js";
 import { fixOxlint, runOxlint } from "../engines/lint/oxlint.js";
@@ -225,6 +226,16 @@ export const runFormattingStep = async (deps: PipelineDeps): Promise<void> => {
 		);
 	} else if (deps.projectInfo.languages.includes("php")) {
 		log.warn("PHP detected but php-cs-fixer is not installed; skipping PHP formatting fixes.");
+	}
+
+	if (deps.projectInfo.languages.includes("lua") && deps.projectInfo.installedTools.stylua) {
+		await deps.runStep(
+			"Formatting (lua)",
+			() => runStylua(deps.context),
+			() => fixStylua(deps.resolvedDir),
+		);
+	} else if (deps.projectInfo.languages.includes("lua")) {
+		log.warn("Lua detected but stylua is not installed; skipping Lua formatting fixes.");
 	}
 };
 

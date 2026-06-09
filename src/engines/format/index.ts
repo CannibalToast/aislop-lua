@@ -3,6 +3,7 @@ import { runBiomeFormat } from "./biome.js";
 import { runGenericFormatter } from "./generic.js";
 import { runGofmt } from "./gofmt.js";
 import { runRuffFormat } from "./ruff-format.js";
+import { runStylua } from "./stylua.js";
 
 export const formatEngine: Engine = {
 	name: "format",
@@ -35,6 +36,10 @@ export const formatEngine: Engine = {
 
 		if (languages.includes("php") && installedTools["php-cs-fixer"]) {
 			promises.push(runGenericFormatter(context, "php"));
+		}
+
+		if (languages.includes("lua") && installedTools.stylua) {
+			promises.push(runStylua(context));
 		}
 
 		const results = await Promise.allSettled(promises);

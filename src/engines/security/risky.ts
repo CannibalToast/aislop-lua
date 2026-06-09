@@ -24,6 +24,13 @@ const DB_METHOD =
 
 const RISKY_PATTERNS: RiskyPattern[] = [
 	{
+		pattern: /\bload(?:string)?\s*\(/g,
+		extensions: [".lua"],
+		name: "lua-load",
+		message: "Use of load()/loadstring() can execute arbitrary code",
+		help: "Avoid dynamic code loading — use static require() or validated data formats",
+	},
+	{
 		// Negative lookbehind skips method-call forms (`.eval(`, `->eval(`, `::eval(`, `\eval(`)
 		// which are not the global eval — common in PHP (Redis Lua), Ruby (binding.eval), JS (custom methods).
 		pattern: new RegExp(`(?<![\\w.>:\\\\])\\b${ev}\\s*\\(`, "g"),

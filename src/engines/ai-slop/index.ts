@@ -7,6 +7,7 @@ import { detectDuplicateImports } from "./duplicate-imports.js";
 import { detectSwallowedExceptions } from "./exceptions.js";
 import { detectGoPatterns } from "./go-patterns.js";
 import { detectHallucinatedImports } from "./hallucinated-imports.js";
+import { detectLuaPatterns } from "./lua-patterns.js";
 import { detectHardcodedConfigLiterals } from "./hardcoded-config.js";
 import { detectMetaComments } from "./meta-comment.js";
 import { detectNarrativeComments } from "./narrative-comments.js";
@@ -37,6 +38,7 @@ export const aiSlopEngine: Engine = {
 			detectHallucinatedImports(context),
 			detectSilentRecovery(context),
 			detectMetaComments(context),
+			detectLuaPatterns(context),
 		]);
 
 		for (const result of results) {

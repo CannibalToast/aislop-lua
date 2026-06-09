@@ -29,6 +29,9 @@ export const buildFixStepNames = (
 		if (projectInfo.languages.includes("ruby") && projectInfo.installedTools.rubocop) {
 			stepNames.push("Lint fixes (ruby)");
 		}
+		if (projectInfo.languages.includes("lua") && projectInfo.installedTools.luacheck) {
+			stepNames.push("Lint fixes (lua)");
+		}
 	}
 
 	if (config.engines["code-quality"] && hasJsTs(projectInfo)) {
@@ -53,6 +56,9 @@ export const buildFixStepNames = (
 		}
 		if (projectInfo.languages.includes("php") && projectInfo.installedTools["php-cs-fixer"]) {
 			stepNames.push("Formatting (php)");
+		}
+		if (projectInfo.languages.includes("lua") && projectInfo.installedTools.stylua) {
+			stepNames.push("Formatting (lua)");
 		}
 	}
 

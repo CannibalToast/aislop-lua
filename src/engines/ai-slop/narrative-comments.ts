@@ -15,6 +15,7 @@ import {
 	JAVA_DECL_START,
 	JAVA_DECL_START_FALLBACK,
 	JUSTIFICATION_OPENERS,
+	LUA_DECL_START,
 	PHP_DECL_START,
 	PY_DECL_START,
 	RUBY_DECL_START,
@@ -42,6 +43,8 @@ const looksLikeDeclarationPreamble = (nextLine: string | null, ext: string): boo
 			return JAVA_DECL_START.test(nextLine) || JAVA_DECL_START_FALLBACK.test(nextLine);
 		case ".php":
 			return PHP_DECL_START.test(nextLine);
+		case ".lua":
+			return LUA_DECL_START.test(nextLine);
 		case ".ts":
 		case ".tsx":
 		case ".js":

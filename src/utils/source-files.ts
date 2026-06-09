@@ -19,6 +19,7 @@ const SOURCE_EXTENSIONS = new Set([
 	".rb",
 	".java",
 	".php",
+	".lua",
 ]);
 
 const EXCLUDED_DIRS = [
@@ -102,8 +103,8 @@ const isBuildCacheFile = (filePath: string): boolean =>
 const TEST_FILE_PATTERNS = [
 	/(?:^|\/).*\.test\.[^/]+$/i,
 	/(?:^|\/).*\.spec\.[^/]+$/i,
-	/(?:^|\/)test_[^/]+\.(?:py|rb|php|js|jsx|ts|tsx|java)$/i,
-	/(?:^|\/)[^/]+_test\.(?:py|go|rb|php|js|jsx|ts|tsx|java)$/i,
+	/(?:^|\/)test_[^/]+\.(?:py|rb|php|lua|js|jsx|ts|tsx|java)$/i,
+	/(?:^|\/)[^/]+_test\.(?:py|go|rb|php|lua|js|jsx|ts|tsx|java)$/i,
 ];
 
 const AUTO_GENERATED_PATTERNS = [

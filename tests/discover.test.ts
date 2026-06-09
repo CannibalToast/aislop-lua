@@ -97,6 +97,24 @@ describe("discoverProject", () => {
 		expect(info.languages).toContain("php");
 	});
 
+	it("detects lua when stylua.toml is present", async () => {
+		createFile(tmpDir, "stylua.toml", 'syntax = "Lua54"\n');
+		const info = await discoverProject(tmpDir);
+		expect(info.languages).toContain("lua");
+	});
+
+	it("detects lua when a .rockspec is present", async () => {
+		createFile(tmpDir, "mylib-1.0-1.rockspec", 'dependencies = { "lua >= 5.1" }\n');
+		const info = await discoverProject(tmpDir);
+		expect(info.languages).toContain("lua");
+	});
+
+	it("detects lua when .lua source files are present", async () => {
+		createFile(tmpDir, "main.lua", "return 1\n");
+		const info = await discoverProject(tmpDir);
+		expect(info.languages).toContain("lua");
+	});
+
 	it("detects python when requirements.txt is present", async () => {
 		createFile(tmpDir, "requirements.txt", "flask==2.0.0");
 		const info = await discoverProject(tmpDir);

@@ -113,6 +113,7 @@ export const SUPPORTED_EXTS = new Set([
 	".rb",
 	".java",
 	".php",
+	".lua",
 ]);
 
 export const DECL_START =
@@ -130,3 +131,4 @@ export const JAVA_DECL_START =
 export const JAVA_DECL_START_FALLBACK = /^\s*(class|interface|enum|record|@interface)\s+/;
 export const PHP_DECL_START =
 	/^\s*(?:(?:public|private|protected|static|final|abstract|readonly)\s+)*(function|class|interface|trait|enum|const)\s+/;
+export const LUA_DECL_START = /^\s*(?:local\s+)?function\s+/;

@@ -40,6 +40,8 @@ export const getCommentSyntax = (ext: string): { linePrefixes: string[] } | null
 			return { linePrefixes: ["#"] };
 		case ".php":
 			return { linePrefixes: ["//", "#"] };
+		case ".lua":
+			return { linePrefixes: ["--"] };
 		default:
 			return null;
 	}

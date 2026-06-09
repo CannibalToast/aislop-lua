@@ -15,3 +15,20 @@ export type { ScoreResult } from "./scoring/index.js";
 export { calculateScore } from "./scoring/index.js";
 export type { Framework, Language, ProjectInfo } from "./utils/discover.js";
 export { discoverProject } from "./utils/discover.js";
+export {
+	compareLuaVersions,
+	LUA_VERSIONS,
+	type LuaReleaseInfo,
+	type LuaVersion,
+	luaVersionAtLeast,
+	luaVersionInfo,
+	parseLuaVersion,
+	SUPPORTED_LUA_VERSIONS,
+} from "./lua/versions.js";
+export {
+	defaultLuaVersion,
+	detectLuaVersion,
+	isSupportedLuaVersion,
+	type LuaProjectInfo,
+	resolveLuaVersion,
+} from "./utils/lua-version.js";

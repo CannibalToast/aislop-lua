@@ -2,6 +2,7 @@ import type { Diagnostic, Engine, EngineContext, EngineResult } from "../types.j
 import { runGenericLinter } from "./generic.js";
 import { runGolangciLint } from "./golangci.js";
 import { runOxlint } from "./oxlint.js";
+import { runLuacheck } from "./luacheck.js";
 import { runRuffLint } from "./ruff.js";
 
 export const lintEngine: Engine = {
@@ -39,6 +40,10 @@ export const lintEngine: Engine = {
 
 		if (languages.includes("ruby") && installedTools.rubocop) {
 			promises.push(runGenericLinter(context, "ruby"));
+		}
+
+		if (languages.includes("lua") && installedTools.luacheck) {
+			promises.push(runLuacheck(context));
 		}
 
 		const results = await Promise.allSettled(promises);

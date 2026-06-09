@@ -18,6 +18,7 @@ const SOURCE_EXTENSIONS = new Set([
 	".rb",
 	".java",
 	".php",
+	".lua",
 ]);
 
 const URL_LITERAL_RE = /(["'`])(https?:\/\/[^"'`\s<>]+)\1/g;
@@ -108,6 +109,7 @@ const commentStartsBefore = (line: string, index: number, ext: string): boolean 
 	const prefix = line.slice(0, index);
 	if (ext === ".py" || ext === ".rb") return prefix.includes("#");
 	if (ext === ".php") return prefix.includes("//") || prefix.includes("#");
+	if (ext === ".lua") return prefix.includes("--");
 	return prefix.includes("//") || prefix.includes("/*");
 };
 

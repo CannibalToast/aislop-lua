@@ -11,7 +11,8 @@ export type Language =
 	| "rust"
 	| "java"
 	| "ruby"
-	| "php";
+	| "php"
+	| "lua";
 
 export type Framework =
 	| "nextjs"
@@ -67,7 +68,6 @@ const UNSUPPORTED_CODE_EXTENSIONS: Record<string, string> = {
 	".hs": "Haskell",
 	".clj": "Clojure",
 	".cljs": "Clojure",
-	".lua": "Lua",
 	".jl": "Julia",
 	".zig": "Zig",
 	".nim": "Nim",
@@ -130,6 +130,17 @@ const PYTHON_SIGNALS = [
 ];
 
 const JAVA_SIGNALS = ["pom.xml", "build.gradle", "build.gradle.kts"];
+
+const LUA_SIGNALS = [
+	".luarc.json",
+	".luarc.jsonc",
+	"stylua.toml",
+	".stylua.toml",
+	"selene.toml",
+	".luacheckrc",
+	".luacheckrc.lua",
+	"rock_manifest",
+];
 
 const FRAMEWORK_PACKAGES: Record<string, Framework> = {
 	next: "nextjs",
@@ -209,6 +220,22 @@ const detectLanguages = (directory: string): Language[] => {
 		}
 	}
 
+	for (const signal of LUA_SIGNALS) {
+		if (fs.existsSync(path.join(directory, signal))) {
+			languages.add("lua");
+			break;
+		}
+	}
+
+	try {
+		const entries = fs.readdirSync(directory);
+		if (entries.some((name) => name.endsWith(".rockspec") || name.endsWith(".lua"))) {
+			languages.add("lua");
+		}
+	} catch {
+		// ignore unreadable directories
+	}
+
 	return [...languages];
 };
 
@@ -276,6 +303,8 @@ const TOOLS_TO_CHECK = [
 	"rubocop",
 	"phpcs",
 	"php-cs-fixer",
+	"stylua",
+	"luacheck",
 ];
 
 const checkInstalledTools = async (): Promise<Record<string, boolean>> => {
