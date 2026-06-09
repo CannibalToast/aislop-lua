@@ -2,7 +2,7 @@ import { luaVersionAtLeast, type LuaVersion } from "../../lua/versions.js";
 import { LUA_VERSION_DEPRECATED_RULES } from "./lua-version-rules-deprecated.js";
 import { LUA_VERSION_REQUIRES_RULES } from "./lua-version-rules-requires.js";
 
-export type { LuaVersionMismatchRule, VersionRuleKind } from "./lua-version-rule-types.js";
+export type { LuaVersionMismatchRule } from "./lua-version-rule-types.js";
 
 export const LUA_VERSION_MISMATCH_RULES = [
 	...LUA_VERSION_REQUIRES_RULES,

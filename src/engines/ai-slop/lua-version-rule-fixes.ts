@@ -1,18 +1,18 @@
-import { luaVersionAtLeast } from "../../lua/versions.js";
+import { luaVersionAtLeast, type LuaVersion } from "../../lua/versions.js";
 import type { LuaVersionMismatchRule } from "./lua-version-rule-types.js";
 
 export const ls = "load" + "string";
 export const sf = "set" + "fenv";
 export const gf = "get" + "fenv";
 
-export const stripLineComment = (line: string): string => {
+const stripLineComment = (line: string): string => {
 	const comment = line.indexOf("--");
 	if (comment === -1) return line;
 	if (comment > 0 && line[comment - 1] === "-") return line;
 	return line.slice(0, comment);
 };
 
-export const applyReplacements = (line: string, replacements: Array<[RegExp, string]>): string => {
+const applyReplacements = (line: string, replacements: Array<[RegExp, string]>): string => {
 	let next = line;
 	for (const [pattern, replacement] of replacements) {
 		pattern.lastIndex = 0;
@@ -21,7 +21,7 @@ export const applyReplacements = (line: string, replacements: Array<[RegExp, str
 	return next;
 };
 
-export const fixUnaryCall = (
+const fixUnaryCall = (
 	line: string,
 	callee: string,
 	replacement: (arg: string) => string,
@@ -32,7 +32,7 @@ export const fixUnaryCall = (
 	return line.replace(pattern, (_, arg: string) => replacement(arg.trim()));
 };
 
-export const fixBinaryCall = (
+const fixBinaryCall = (
 	line: string,
 	callee: string,
 	replacement: (a: string, b: string) => string,
@@ -85,6 +85,46 @@ export const fixBit32ToOperators = (line: string): string | null => {
 	]);
 	return fixed !== code ? fixed + line.slice(code.length) : null;
 };
+
+export const unaryDeprecatedRule = (
+	rule: string,
+	version: LuaVersion,
+	pattern: RegExp,
+	message: string,
+	help: string,
+	callee: string,
+	replacement: (arg: string) => string,
+): LuaVersionMismatchRule => ({
+	rule,
+	kind: "deprecated",
+	version,
+	pattern,
+	message,
+	help,
+	fixable: true,
+	shouldFlag: (target) => luaVersionAtLeast(target, version),
+	fixLine: (line) => fixUnaryCall(line, callee, replacement),
+});
+
+export const binaryDeprecatedRule = (
+	rule: string,
+	version: LuaVersion,
+	pattern: RegExp,
+	message: string,
+	help: string,
+	callee: string,
+	replacement: (a: string, b: string) => string,
+): LuaVersionMismatchRule => ({
+	rule,
+	kind: "deprecated",
+	version,
+	pattern,
+	message,
+	help,
+	fixable: true,
+	shouldFlag: (target) => luaVersionAtLeast(target, version),
+	fixLine: (line) => fixBinaryCall(line, callee, replacement),
+});
 
 export const envAccessorRule = (
 	rule: string,

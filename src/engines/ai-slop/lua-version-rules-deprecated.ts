@@ -1,13 +1,13 @@
 import { luaVersionAtLeast } from "../../lua/versions.js";
 import {
+	binaryDeprecatedRule,
 	envAccessorRule,
-	fixBinaryCall,
 	fixBit32ToOperators,
-	fixUnaryCall,
 	gf,
 	ls,
 	removeStandaloneCall,
 	sf,
+	unaryDeprecatedRule,
 } from "./lua-version-rule-fixes.js";
 import type { LuaVersionMismatchRule } from "./lua-version-rule-types.js";
 
@@ -131,17 +131,15 @@ export const LUA_VERSION_DEPRECATED_RULES: readonly LuaVersionMismatchRule[] = [
 			return next !== line ? next : null;
 		},
 	},
-	{
-		rule: "ai-slop/lua-version-table-getn",
-		kind: "deprecated",
-		version: "5.2",
-		pattern: /\btable\.getn\s*\(/,
-		message: "`table.getn` was removed in Lua 5.2; use the `#` operator",
-		help: "Replace `table.getn(t)` with `#t`.",
-		fixable: true,
-		shouldFlag: (target) => luaVersionAtLeast(target, "5.2"),
-		fixLine: (line) => fixUnaryCall(line, "table.getn", (arg) => `#(${arg})`),
-	},
+	unaryDeprecatedRule(
+		"ai-slop/lua-version-table-getn",
+		"5.2",
+		/\btable\.getn\s*\(/,
+		"`table.getn` was removed in Lua 5.2; use the `#` operator",
+		"Replace `table.getn(t)` with `#t`.",
+		"table.getn",
+		(arg) => `#(${arg})`,
+	),
 	{
 		rule: "ai-slop/lua-version-table-setn",
 		kind: "deprecated",
@@ -201,28 +199,24 @@ export const LUA_VERSION_DEPRECATED_RULES: readonly LuaVersionMismatchRule[] = [
 			return next !== line ? next : null;
 		},
 	},
-	{
-		rule: "ai-slop/lua-version-math-log10",
-		kind: "deprecated",
-		version: "5.3",
-		pattern: /\bmath\.log10\s*\(/,
-		message: "`math.log10` is deprecated on Lua 5.3+; use `math.log(x, 10)`",
-		help: "Replace `math.log10(x)` with `math.log(x, 10)`.",
-		fixable: true,
-		shouldFlag: (target) => luaVersionAtLeast(target, "5.3"),
-		fixLine: (line) => fixUnaryCall(line, "math.log10", (arg) => `math.log(${arg}, 10)`),
-	},
-	{
-		rule: "ai-slop/lua-version-math-ldexp",
-		kind: "deprecated",
-		version: "5.3",
-		pattern: /\bmath\.ldexp\s*\(/,
-		message: "`math.ldexp` is deprecated on Lua 5.3+; use `x * 2.0^exp`",
-		help: "Replace `math.ldexp(x, exp)` with `(x * 2.0 ^ exp)`.",
-		fixable: true,
-		shouldFlag: (target) => luaVersionAtLeast(target, "5.3"),
-		fixLine: (line) => fixBinaryCall(line, "math.ldexp", (x, exp) => `(${x} * 2.0 ^ ${exp})`),
-	},
+	unaryDeprecatedRule(
+		"ai-slop/lua-version-math-log10",
+		"5.3",
+		/\bmath\.log10\s*\(/,
+		"`math.log10` is deprecated on Lua 5.3+; use `math.log(x, 10)`",
+		"Replace `math.log10(x)` with `math.log(x, 10)`.",
+		"math.log10",
+		(arg) => `math.log(${arg}, 10)`,
+	),
+	binaryDeprecatedRule(
+		"ai-slop/lua-version-math-ldexp",
+		"5.3",
+		/\bmath\.ldexp\s*\(/,
+		"`math.ldexp` is deprecated on Lua 5.3+; use `x * 2.0^exp`",
+		"Replace `math.ldexp(x, exp)` with `(x * 2.0 ^ exp)`.",
+		"math.ldexp",
+		(x, exp) => `(${x} * 2.0 ^ ${exp})`,
+	),
 	{
 		rule: "ai-slop/lua-version-math-frexp",
 		kind: "deprecated",

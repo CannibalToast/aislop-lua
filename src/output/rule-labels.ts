@@ -206,7 +206,8 @@ const RULE_DESCRIPTIONS: Record<string, string> = {
 	"ai-slop/lua-version-table-setn": "table.setn was removed in Lua 5.2.",
 	"ai-slop/lua-version-table-maxn": "table.maxn was removed in Lua 5.2.",
 	"ai-slop/lua-version-table-foreach": "table.foreach was removed in Lua 5.2.",
-	"ai-slop/lua-version-package-loaders": "package.loaders was renamed to package.searchers in Lua 5.2.",
+	"ai-slop/lua-version-package-loaders":
+		"package.loaders was renamed to package.searchers in Lua 5.2.",
 	"ai-slop/lua-version-package-searchers": "package.searchers needs Lua 5.2+.",
 	"ai-slop/lua-version-table-pack": "table.pack needs Lua 5.2+.",
 	"ai-slop/lua-version-loadlib": "loadlib should be package.loadlib on Lua 5.1+.",

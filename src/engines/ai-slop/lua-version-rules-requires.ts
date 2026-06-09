@@ -1,8 +1,5 @@
 import { luaVersionAtLeast } from "../../lua/versions.js";
-import {
-	fixBitwiseToBit32,
-	fixFloorDivision,
-} from "./lua-version-rule-fixes.js";
+import { fixBitwiseToBit32, fixFloorDivision } from "./lua-version-rule-fixes.js";
 import type { LuaVersionMismatchRule } from "./lua-version-rule-types.js";
 
 export const LUA_VERSION_REQUIRES_RULES: readonly LuaVersionMismatchRule[] = [
