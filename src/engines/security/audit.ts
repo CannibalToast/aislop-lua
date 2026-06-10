@@ -4,6 +4,7 @@ import path from "node:path";
 import { detectInvocation } from "../../ui/invocation.js";
 import { runSubprocess } from "../../utils/subprocess.js";
 import type { Diagnostic, EngineContext } from "../types.js";
+import { appendAll } from "../../utils/append.js";
 
 const withFixHint = (rest: string): string => {
 	const invocation = detectInvocation();
@@ -47,7 +48,7 @@ export const runDependencyAudit = async (context: EngineContext): Promise<Diagno
 	const results = await Promise.allSettled(promises);
 	for (const result of results) {
 		if (result.status === "fulfilled") {
-			diagnostics.push(...result.value);
+			appendAll(diagnostics, result.value);
 		}
 	}
 

@@ -196,31 +196,30 @@ export const listProjectFiles = (rootDirectory: string): string[] => {
 			.filter((file) => fs.existsSync(path.resolve(rootDirectory, file)));
 	}
 
-	const findArgs = [
-		".",
-		"(",
-		...FIND_PRUNE_DIRS.flatMap((dir, index) =>
-			index === 0 ? ["-name", dir] : ["-o", "-name", dir],
-		),
-		")",
-		"-prune",
-		"-o",
-		"-type",
-		"f",
-		"-print",
-	];
-	const findResult = spawnSync("find", findArgs, {
-		cwd: rootDirectory,
-		encoding: "utf-8",
-		maxBuffer: MAX_BUFFER,
-	});
+	return walkProjectFiles(rootDirectory);
+};
 
-	if (findResult.error || findResult.status !== 0) return [];
-
-	return findResult.stdout
-		.split("\n")
-		.filter((file) => file.length > 0)
-		.map((file) => file.replace(/^\.\//, ""));
+const walkProjectFiles = (rootDirectory: string): string[] => {
+	const pruneSet = new Set(FIND_PRUNE_DIRS);
+	const output: string[] = [];
+	const visit = (dir: string) => {
+		let entries: fs.Dirent[];
+		try {
+			entries = fs.readdirSync(dir, { withFileTypes: true });
+		} catch {
+			return;
+		}
+		for (const entry of entries) {
+			const fullPath = path.join(dir, entry.name);
+			if (entry.isDirectory()) {
+				if (!pruneSet.has(entry.name)) visit(fullPath);
+			} else if (entry.isFile()) {
+				output.push(path.relative(rootDirectory, fullPath).split(path.sep).join("/"));
+			}
+		}
+	};
+	visit(rootDirectory);
+	return output;
 };
 
 export const readAislopIgnorePatterns = (rootDirectory: string): string[] => {

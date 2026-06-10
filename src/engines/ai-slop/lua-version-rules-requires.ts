@@ -35,7 +35,7 @@ export const LUA_VERSION_REQUIRES_RULES: readonly LuaVersionMismatchRule[] = [
 		rule: "ai-slop/lua-version-bitwise",
 		kind: "requires",
 		version: "5.3",
-		pattern: /[&|^~]|<<|>>/,
+		pattern: /[&|]|<<|>>|~(?!=)/,
 		message: "Bitwise operators require Lua 5.3 or newer",
 		help: "Use `bit32` on Lua 5.2, or upgrade the project's Lua target to 5.3+.",
 		fixable: true,

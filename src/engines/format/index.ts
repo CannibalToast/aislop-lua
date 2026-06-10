@@ -4,6 +4,7 @@ import { runGenericFormatter } from "./generic.js";
 import { runGofmt } from "./gofmt.js";
 import { runRuffFormat } from "./ruff-format.js";
 import { runStylua } from "./stylua.js";
+import { appendAll } from "../../utils/append.js";
 
 export const formatEngine: Engine = {
 	name: "format",
@@ -45,7 +46,7 @@ export const formatEngine: Engine = {
 		const results = await Promise.allSettled(promises);
 		for (const result of results) {
 			if (result.status === "fulfilled") {
-				diagnostics.push(...result.value);
+				appendAll(diagnostics, result.value);
 			}
 		}
 

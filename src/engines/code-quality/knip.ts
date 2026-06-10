@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { runSubprocess } from "../../utils/subprocess.js";
 import type { Diagnostic } from "../types.js";
+import { appendAll } from "../../utils/append.js";
 
 interface KnipIssueItem {
 	name?: string;
@@ -253,7 +254,7 @@ export const runKnip = async (rootDirectory: string): Promise<Diagnostic[]> => {
 		const issueTypes = [...DEPENDENCY_TYPES, "exports", "types", "duplicates"] as const;
 		for (const fileIssue of issues) {
 			for (const type of issueTypes) {
-				diagnostics.push(...collectIssues(fileIssue, type, rootDirectory, knipRuntime.cwd));
+				appendAll(diagnostics, collectIssues(fileIssue, type, rootDirectory, knipRuntime.cwd));
 			}
 		}
 

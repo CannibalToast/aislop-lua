@@ -3,6 +3,7 @@ import { checkComplexity } from "./complexity.js";
 import { detectDuplicateBlocks } from "./duplicate-block.js";
 import { runKnip } from "./knip.js";
 import { detectRepeatedChainedCalls } from "./repeated-chained-call.js";
+import { appendAll } from "../../utils/append.js";
 
 export const codeQualityEngine: Engine = {
 	name: "code-quality",
@@ -23,7 +24,7 @@ export const codeQualityEngine: Engine = {
 		const results = await Promise.allSettled(promises);
 		for (const result of results) {
 			if (result.status === "fulfilled") {
-				diagnostics.push(...result.value);
+				appendAll(diagnostics, result.value);
 			}
 		}
 

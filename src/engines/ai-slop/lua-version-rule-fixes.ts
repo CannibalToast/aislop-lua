@@ -5,7 +5,7 @@ export const ls = "load" + "string";
 export const sf = "set" + "fenv";
 export const gf = "get" + "fenv";
 
-const stripLineComment = (line: string): string => {
+export const stripLineComment = (line: string): string => {
 	const comment = line.indexOf("--");
 	if (comment === -1) return line;
 	if (comment > 0 && line[comment - 1] === "-") return line;

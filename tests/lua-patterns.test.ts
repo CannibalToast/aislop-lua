@@ -66,6 +66,34 @@ describe("detectLuaPatterns", () => {
 		expect(diagnostics.some((d) => d.rule === "ai-slop/lua-version-bitwise")).toBe(true);
 	});
 
+	it("does not flag inequality `~=` as bitwise", async () => {
+		fs.writeFileSync(path.join(tmpDir, "stylua.toml"), 'syntax = "Lua51"\n');
+		writeLua("cmp.lua", "if x ~= nil then return end\n");
+		const diagnostics = await detectLuaPatterns(makeContext(tmpDir));
+		expect(diagnostics.some((d) => d.rule === "ai-slop/lua-version-bitwise")).toBe(false);
+	});
+
+	it("does not flag exponentiation `^` as bitwise", async () => {
+		fs.writeFileSync(path.join(tmpDir, "stylua.toml"), 'syntax = "Lua51"\n');
+		writeLua("pow.lua", "local x = 2 ^ 10\n");
+		const diagnostics = await detectLuaPatterns(makeContext(tmpDir));
+		expect(diagnostics.some((d) => d.rule === "ai-slop/lua-version-bitwise")).toBe(false);
+	});
+
+	it("does not flag bitwise tokens inside comments", async () => {
+		fs.writeFileSync(path.join(tmpDir, "stylua.toml"), 'syntax = "Lua51"\n');
+		writeLua("doc.lua", "-- squad/weapon max & current size\nlocal x = 1\n");
+		const diagnostics = await detectLuaPatterns(makeContext(tmpDir));
+		expect(diagnostics.some((d) => d.rule === "ai-slop/lua-version-bitwise")).toBe(false);
+	});
+
+	it("flags unary bitwise NOT on Lua 5.1 target", async () => {
+		fs.writeFileSync(path.join(tmpDir, "stylua.toml"), 'syntax = "Lua51"\n');
+		writeLua("bnot.lua", "local x = ~mask\n");
+		const diagnostics = await detectLuaPatterns(makeContext(tmpDir));
+		expect(diagnostics.some((d) => d.rule === "ai-slop/lua-version-bitwise")).toBe(true);
+	});
+
 	it("flags declare on Lua 5.4 target", async () => {
 		fs.writeFileSync(path.join(tmpDir, ".luarc.json"), JSON.stringify({ runtime: { version: "5.4" } }));
 		writeLua("globals.lua", "declare global_name\n");

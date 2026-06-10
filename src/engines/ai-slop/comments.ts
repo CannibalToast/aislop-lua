@@ -9,6 +9,7 @@ import {
 	RUBY_DECL_START,
 } from "./narrative-comments-patterns.js";
 import { isNonProductionPath } from "./non-production-paths.js";
+import { appendAll } from "../../utils/append.js";
 
 const TRIVIAL_VERB_STEMS =
 	"Import|Defin|Initializ|Setting|Set\\s+up|Setup|Return|Check|Loop|Iterat|Creat|Updat|Delet|Remov|Handl|Get|Fetch|Increment|Decrement|Writ|Runn|Run|Pars|Execut|Extract|Sav|Load|Build|Start|Stopp|Stop|Clean(?:up|\\s+up)?|Configur|Validat|Process|Queue|Fire|Emit|Dispatch|Log|Print|Render";
@@ -168,7 +169,7 @@ export const detectTrivialComments = async (context: EngineContext): Promise<Dia
 			continue;
 		}
 
-		diagnostics.push(...scanFileForTrivialComments(content, relativePath, path.extname(filePath)));
+		appendAll(diagnostics, scanFileForTrivialComments(content, relativePath, path.extname(filePath)));
 	}
 
 	return diagnostics;

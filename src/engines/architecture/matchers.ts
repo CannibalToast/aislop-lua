@@ -4,6 +4,7 @@ import path from "node:path";
 import { getSourceFiles } from "../../utils/source-files.js";
 import type { Diagnostic, EngineContext } from "../types.js";
 import type { ArchitectureRule } from "./rule-loader.js";
+import { appendAll } from "../../utils/append.js";
 
 const REGEX_SPECIAL_CHARS = new Set([".", "+", "^", "$", "{", "}", "(", ")", "|", "\\"]);
 
@@ -201,7 +202,7 @@ export const checkRules = async (
 		const imports = extractImports(content, path.extname(filePath));
 
 		for (const rule of rules) {
-			diagnostics.push(...applyRule(rule, imports, content, relativePath));
+			appendAll(diagnostics, applyRule(rule, imports, content, relativePath));
 		}
 	}
 

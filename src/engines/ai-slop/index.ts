@@ -15,6 +15,7 @@ import { detectPythonPatterns } from "./python-patterns.js";
 import { detectRustPatterns } from "./rust-patterns.js";
 import { detectSilentRecovery } from "./silent-recovery.js";
 import { detectUnusedImports } from "./unused-imports.js";
+import { appendAll } from "../../utils/append.js";
 
 export const aiSlopEngine: Engine = {
 	name: "ai-slop",
@@ -43,7 +44,7 @@ export const aiSlopEngine: Engine = {
 
 		for (const result of results) {
 			if (result.status === "fulfilled") {
-				diagnostics.push(...result.value);
+				appendAll(diagnostics, result.value);
 			}
 		}
 

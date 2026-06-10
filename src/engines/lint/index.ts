@@ -4,6 +4,7 @@ import { runGolangciLint } from "./golangci.js";
 import { runOxlint } from "./oxlint.js";
 import { runLuacheck } from "./luacheck.js";
 import { runRuffLint } from "./ruff.js";
+import { appendAll } from "../../utils/append.js";
 
 export const lintEngine: Engine = {
 	name: "lint",
@@ -49,7 +50,7 @@ export const lintEngine: Engine = {
 		const results = await Promise.allSettled(promises);
 		for (const result of results) {
 			if (result.status === "fulfilled") {
-				diagnostics.push(...result.value);
+				appendAll(diagnostics, result.value);
 			}
 		}
 

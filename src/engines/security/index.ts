@@ -2,6 +2,7 @@ import type { Diagnostic, Engine, EngineContext, EngineResult } from "../types.j
 import { runDependencyAudit } from "./audit.js";
 import { detectRiskyConstructs } from "./risky.js";
 import { scanSecrets } from "./secrets.js";
+import { appendAll } from "../../utils/append.js";
 
 export const securityEngine: Engine = {
 	name: "security",
@@ -21,7 +22,7 @@ export const securityEngine: Engine = {
 		const results = await Promise.allSettled(promises);
 		for (const result of results) {
 			if (result.status === "fulfilled") {
-				diagnostics.push(...result.value);
+				appendAll(diagnostics, result.value);
 			}
 		}
 
